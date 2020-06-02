@@ -18,6 +18,7 @@
   )
 
   (defn printMenu []
+    (println "")
     (println "*** Sales Menu ***")
     (println "------------------")
     (println "")
@@ -31,16 +32,32 @@
     (println "Enter an option?")
   )
 
-  (defn printCustomersTable []
-    (println "Customers")
+  (defn runUserFunctionality [customerVector productVector salesVector inpChoice]
+    (cond
+        (= inpChoice "1") (println "Selected 1")
+        (= inpChoice "2") (println "Selected 2")
+        (= inpChoice "3") (println "Selected 3")
+        (= inpChoice "4") (println "Selected 4")
+        (= inpChoice "5") (println "Selected 5")
+    )
   )
 
-  (defn printProductsTable []
-    (println "Products")
-  )
-
-  (defn printSalesTable []
-    (println "Sales")
+  (defn handleUserInput [customerVector productVector salesVector userInp]
+    (if ( or (= "1" userInp) (= "2" userInp) (= "3" userInp) (= "4" userInp) (= "5" userInp))
+      (do (runUserFunctionality customerVector productVector salesVector userInp)
+          (printMenu)
+          (def userChoice (read-line))
+          (handleUserInput customerVector productVector salesVector userChoice)
+      )
+      (if (= "6" userInp)
+        (do (println "Good Bye!!!!"))
+        (do (println "Kindly enter a valid option...")
+            (printMenu)
+            (def userChoice (read-line))
+            (handleUserInput customerVector productVector salesVector userChoice)
+        )
+      )
+    )
   )
 
   (defn launchSalesApp []
@@ -49,21 +66,9 @@
     (def productVector (readProductsDataFile))
     (def salesVector (readSalesDataFile))
     (println "Successfully loaded data files!")
-    (def choice (atom 0))
-    (while (not= @choice 6)
-      (printMenu)
-      (def userInp (read-line))
-      (cond
-        (= (clojure.string/trim userInp) "1") (printCustomersTable)
-        (= (clojure.string/trim userInp) "2") (printProductsTable)
-        (= (clojure.string/trim userInp) "3") (printSalesTable)
-        (= (clojure.string/trim userInp) "4") (println "Selected 4")
-        (= (clojure.string/trim userInp) "5") (println "Selected 1")
-        (= (clojure.string/trim userInp) "6") (reset! choice 6)
-        :else (println "Please enter a valid option...")
-      )
-    )
-    (println "Good Bye!!!!")
+    (printMenu)
+    (def userInp (read-line))
+    (handleUserInput customerVector productVector salesVector userInp)
   )
 
   (launchSalesApp)
