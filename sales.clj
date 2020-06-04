@@ -5,17 +5,44 @@
 
   (ns com.SalesApp)
 
+  (defn prepareCustomersVectorOfMaps [dataRecord]
+    (def customerRecord (clojure.string/split dataRecord #"\|"))
+    (hash-map :custID (get customerRecord 0)
+              :name (get customerRecord 1)
+              :address (get customerRecord 2)
+              :phoneNumber (get customerRecord 3)
+    )
+  )
+
   (defn readCustomersDataFile []
-    (with-open [rdr (clojure.java.io/reader "cust.txt")] (reduce conj [] (line-seq rdr)))
+    (map prepareCustomersVectorOfMaps (clojure.string/split-lines (slurp "cust.txt")))
+  )
+
+  (defn prepareProductsVectorOfMaps [dataRecord]
+    (def productRecord (clojure.string/split dataRecord #"\|"))
+    (hash-map :prodID (get productRecord 0)
+              :itemDescription (get productRecord 1)
+              :unitCost (Double/parseDouble (get productRecord 2))
+    )
   )
 
   (defn readProductsDataFile []
-    (with-open [rdr (clojure.java.io/reader "prod.txt")] (reduce conj [] (line-seq rdr)))
+    (map prepareProductsVectorOfMaps (clojure.string/split-lines (slurp "prod.txt")))
+  )
+
+  (defn prepareSalesVectorOfMaps [dataRecord]
+    (def salesRecord (clojure.string/split dataRecord #"\|"))
+    (hash-map :salesID (get salesRecord 0)
+              :custID (get salesRecord 1)
+              :prodID (get salesRecord 2)
+              :itemCount (Integer/parseInt (get salesRecord 3))
+    )
   )
 
   (defn readSalesDataFile []
-    (with-open [rdr (clojure.java.io/reader "sales.txt")] (reduce conj [] (line-seq rdr)))
+    (map prepareSalesVectorOfMaps (clojure.string/split-lines (slurp "sales.txt")))
   )
+
 
   (defn printMenu []
     (println "")
@@ -30,6 +57,7 @@
     (println "6. Exit")
     (println "")
     (println "Enter an option?")
+    (str)
   )
 
   (defn runUserFunctionality [customerVector productVector salesVector inpChoice]
@@ -40,6 +68,33 @@
         (= inpChoice "4") (println "Selected 4")
         (= inpChoice "5") (println "Selected 5")
     )
+  )
+
+  (defn printCustomerRecord [customerRecord]
+    (println (customerRecord :custID) ": [" (customerRecord :name) "," (customerRecord :address) "," (customerRecord :phoneNumber) "]")
+    (str)
+  )
+
+  (defn printCustomersMap [customerMaps]
+    (map printCustomerRecord (sort-by :custID customerMaps))
+  )
+
+  (defn printProductRecord [productRecord]
+    (println (productRecord :prodID) ": [" (productRecord :itemDescription) "," (productRecord :unitCost) "]")
+    (str)
+  )
+
+  (defn printProductsMap [productMaps]
+    (map printProductRecord (sort-by :prodID productMaps))
+  )
+
+  (defn printSalesRecord [salesRecord]
+    (println (salesRecord :salesID) ": [" (salesRecord :name) "," (salesRecord :itemDescription) "," (salesRecord :itemCount) "]")
+    (str)
+  )
+
+  (defn printSalesMap [salesMaps]
+    (map printSalesRecord (sort-by :salesID salesMaps))
   )
 
   (defn handleUserInput [customerVector productVector salesVector userInp]
