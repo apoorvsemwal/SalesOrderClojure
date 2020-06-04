@@ -64,7 +64,7 @@
   )
 
   (defn printCustomersMap [customerMaps]
-    (dorun (map printCustomerRecord (sort-by :custID customerMaps)))
+    (mapv printCustomerRecord (sort-by :custID customerMaps))
   )
 
   (defn printProductRecord [productRecord]
@@ -72,7 +72,22 @@
   )
 
   (defn printProductsMap [productMaps]
-    (dorun (map printProductRecord (sort-by :prodID productMaps)))
+    (mapv printProductRecord (sort-by :prodID productMaps))
+  )
+
+  (defn updateSalesMap [salesMaps customerMaps productMaps]
+    (letfn [(linkSalesToCustomerAndProductAndPrice [salesRecord]
+              (def salesCustomer (vec (filter (fn [customerRecord] (= (customerRecord :custID) (salesRecord :custID))) customerMaps)))
+              (def salesProduct (vec (filter (fn [productRecord] (= (productRecord :prodID) (salesRecord :prodID))) productMaps)))
+              (hash-map :salesID (salesRecord :salesID)
+                        :name ((get salesCustomer 0) :name)
+                        :itemDescription ((get salesProduct 0) :itemDescription)
+                        :unitCost ((get salesProduct 0) :unitCost)
+                        :itemCount (salesRecord :itemCount)
+              )
+           )]
+           (map linkSalesToCustomerAndProductAndPrice salesMaps)
+    )
   )
 
   (defn printSalesRecord [salesRecord]
@@ -85,11 +100,6 @@
 
   (defn runUserFunctionality [customerMaps productMaps salesMaps inpChoice]
     (cond
-      ; (= inpChoice "1") (println "Selected 1")
-      ; (= inpChoice "2") (println "Selected 2")
-      ; (= inpChoice "3") (println "Selected 3")
-      ; (= inpChoice "4") (println "Selected 4")
-      ; (= inpChoice "5") (println "Selected 5")
       (= inpChoice "1") (printCustomersMap customerMaps)
       (= inpChoice "2") (printProductsMap productMaps)
       (= inpChoice "3") (printSalesMap salesMaps)
@@ -122,10 +132,11 @@
     (def customerMaps (readCustomersDataFile))
     (def productMaps (readProductsDataFile))
     (def salesMaps (readSalesDataFile))
+    (def salesMapsWithCustomerAndProduct (updateSalesMap salesMaps customerMaps productMaps))
     (println "Successfully loaded data files!")
     (printMenu)
     (def userInp (read-line))
-    (handleUserInput customerMaps productMaps salesMaps userInp)
+    (handleUserInput customerMaps productMaps salesMapsWithCustomerAndProduct userInp)
   )
 
   (launchSalesApp)
