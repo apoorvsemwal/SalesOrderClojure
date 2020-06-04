@@ -102,10 +102,18 @@
         (filter (fn [salesRecord] (= custName (salesRecord :name))) salesMaps)
       )
     )
-    (def totalSaleValueCustomer
-      (mapv (fn [salesRecord] (assoc salesRecord :saleValue (* (:itemCount salesRecord) (:unitCost salesRecord)))) salesCustomer)
+    (if (empty? salesCustomer)
+      (do
+        (println "Error: Customer" custName "not found in database. Names are case sensitive. Please check and try again...")
+      )
+      (do
+        (def totalSaleValueCustomer
+          (mapv (fn [salesRecord] (assoc salesRecord :saleValue (* (:itemCount salesRecord) (:unitCost salesRecord)))) salesCustomer)
+        )
+        (println custName ": $" (reduce + (mapv :saleValue totalSaleValueCustomer)))
+      )
     )
-    (println custName ": $" (reduce + (mapv :saleValue totalSaleValueCustomer)))
+
   )
 
   (defn printTotalSoldItemCount [salesMaps]
@@ -117,7 +125,14 @@
         (filter (fn [salesRecord] (= prodName (salesRecord :itemDescription))) salesMaps)
       )
     )
-    (println prodName ": $" (reduce + (mapv :itemCount salesItem)))
+    (if (empty? salesItem)
+      (do
+        (println "Error: Item" prodName "not found in database. Names are case sensitive. Please check and try again...")
+      )
+      (do
+        (println prodName ":" (reduce + (mapv :itemCount salesItem)))
+      )
+    )
   )
 
   (defn runUserFunctionality [customerMaps productMaps salesMaps inpChoice]
