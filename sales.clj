@@ -45,10 +45,10 @@
 
 
   (defn printMenu []
-    (println "")
+    (newline)
     (println "*** Sales Menu ***")
     (println "------------------")
-    (println "")
+    (newline)
     (println "1. Display Customer Table")
     (println "2. Display Product Table")
     (println "3. Display Sales Table")
@@ -57,73 +57,75 @@
     (println "6. Exit")
     (println "")
     (println "Enter an option?")
-    (str)
-  )
-
-  (defn runUserFunctionality [customerVector productVector salesVector inpChoice]
-    (cond
-        (= inpChoice "1") (println "Selected 1")
-        (= inpChoice "2") (println "Selected 2")
-        (= inpChoice "3") (println "Selected 3")
-        (= inpChoice "4") (println "Selected 4")
-        (= inpChoice "5") (println "Selected 5")
-    )
   )
 
   (defn printCustomerRecord [customerRecord]
     (println (customerRecord :custID) ": [" (customerRecord :name) "," (customerRecord :address) "," (customerRecord :phoneNumber) "]")
-    (str)
   )
 
   (defn printCustomersMap [customerMaps]
-    (map printCustomerRecord (sort-by :custID customerMaps))
+    (dorun (map printCustomerRecord (sort-by :custID customerMaps)))
   )
 
   (defn printProductRecord [productRecord]
     (println (productRecord :prodID) ": [" (productRecord :itemDescription) "," (productRecord :unitCost) "]")
-    (str)
   )
 
   (defn printProductsMap [productMaps]
-    (map printProductRecord (sort-by :prodID productMaps))
+    (dorun (map printProductRecord (sort-by :prodID productMaps)))
   )
 
   (defn printSalesRecord [salesRecord]
     (println (salesRecord :salesID) ": [" (salesRecord :name) "," (salesRecord :itemDescription) "," (salesRecord :itemCount) "]")
-    (str)
   )
 
   (defn printSalesMap [salesMaps]
-    (map printSalesRecord (sort-by :salesID salesMaps))
+    (dorun (map printSalesRecord (sort-by :salesID salesMaps)))
   )
 
-  (defn handleUserInput [customerVector productVector salesVector userInp]
+  (defn runUserFunctionality [customerMaps productMaps salesMaps inpChoice]
+    (cond
+      ; (= inpChoice "1") (println "Selected 1")
+      ; (= inpChoice "2") (println "Selected 2")
+      ; (= inpChoice "3") (println "Selected 3")
+      ; (= inpChoice "4") (println "Selected 4")
+      ; (= inpChoice "5") (println "Selected 5")
+      (= inpChoice "1") (printCustomersMap customerMaps)
+      (= inpChoice "2") (printProductsMap productMaps)
+      (= inpChoice "3") (printSalesMap salesMaps)
+      (= inpChoice "4") (printCustomersMap customerMaps)
+      (= inpChoice "5") (printCustomersMap customerMaps)
+    )
+  )
+
+  (defn handleUserInput [customerMaps productMaps salesMaps userInp]
     (if ( or (= "1" userInp) (= "2" userInp) (= "3" userInp) (= "4" userInp) (= "5" userInp))
-      (do (runUserFunctionality customerVector productVector salesVector userInp)
+      (do (runUserFunctionality customerMaps productMaps salesMaps userInp)
           (printMenu)
           (def userChoice (read-line))
-          (handleUserInput customerVector productVector salesVector userChoice)
+          (handleUserInput customerMaps productMaps salesMaps userChoice)
       )
       (if (= "6" userInp)
         (do (println "Good Bye!!!!"))
         (do (println "Kindly enter a valid option...")
             (printMenu)
             (def userChoice (read-line))
-            (handleUserInput customerVector productVector salesVector userChoice)
+            (handleUserInput customerMaps productMaps salesMaps userChoice)
         )
       )
     )
   )
 
   (defn launchSalesApp []
+    (newline)
     (println "Loadin data files......")
-    (def customerVector (readCustomersDataFile))
-    (def productVector (readProductsDataFile))
-    (def salesVector (readSalesDataFile))
+    (def customerMaps (readCustomersDataFile))
+    (def productMaps (readProductsDataFile))
+    (def salesMaps (readSalesDataFile))
     (println "Successfully loaded data files!")
     (printMenu)
     (def userInp (read-line))
-    (handleUserInput customerVector productVector salesVector userInp)
+    (handleUserInput customerMaps productMaps salesMaps userInp)
   )
 
   (launchSalesApp)
