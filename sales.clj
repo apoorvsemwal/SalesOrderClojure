@@ -1,8 +1,3 @@
-    ;cd '.\Concor\Subjects\Term6-Summer-2020\Comparative-COMP 6411\Assignments\A2\SalesOrderClojure\'
-    ;Run link chlorine to REPL first using Powershell
-    ;clj -J'-Dclojure.server.repl={:port,5555,:accept,clojure.core.server/repl}'
-    ;(ns com.SalesApp)
-
   (ns com.SalesApp)
 
   (defn prepareCustomersVectorOfMaps [dataRecord]
@@ -55,7 +50,7 @@
     (println "4. Total Sales for Customer")
     (println "5. Total Count for Product")
     (println "6. Exit")
-    (println "")
+    (newline)
     (println "Enter an option?")
   )
 
@@ -98,13 +93,40 @@
     (dorun (map printSalesRecord (sort-by :salesID salesMaps)))
   )
 
+  (defn printTotalSaleValueForCustomer [salesMaps]
+    (println "Enter the customer's name whose total sale value to find.")
+    (def custName (read-line))
+    (newline)
+    (def salesCustomer
+      (vec
+        (filter (fn [salesRecord] (= custName (salesRecord :name))) salesMaps)
+      )
+    )
+    (def totalSaleValueCustomer
+      (mapv (fn [salesRecord] (assoc salesRecord :saleValue (* (:itemCount salesRecord) (:unitCost salesRecord)))) salesCustomer)
+    )
+    (println custName ": $" (reduce + (mapv :saleValue totalSaleValueCustomer)))
+  )
+
+  (defn printTotalSoldItemCount [salesMaps]
+    (newline)
+    (println "Enter the item's name for which total sale count to find.")
+    (def prodName (read-line))
+    (def salesItem
+      (vec
+        (filter (fn [salesRecord] (= prodName (salesRecord :itemDescription))) salesMaps)
+      )
+    )
+    (println prodName ": $" (reduce + (mapv :itemCount salesItem)))
+  )
+
   (defn runUserFunctionality [customerMaps productMaps salesMaps inpChoice]
     (cond
       (= inpChoice "1") (printCustomersMap customerMaps)
       (= inpChoice "2") (printProductsMap productMaps)
       (= inpChoice "3") (printSalesMap salesMaps)
-      (= inpChoice "4") (printCustomersMap customerMaps)
-      (= inpChoice "5") (printCustomersMap customerMaps)
+      (= inpChoice "4") (printTotalSaleValueForCustomer salesMaps)
+      (= inpChoice "5") (printTotalSoldItemCount salesMaps)
     )
   )
 
@@ -113,6 +135,7 @@
       (do (runUserFunctionality customerMaps productMaps salesMaps userInp)
           (printMenu)
           (def userChoice (read-line))
+          (newline)
           (handleUserInput customerMaps productMaps salesMaps userChoice)
       )
       (if (= "6" userInp)
@@ -120,6 +143,7 @@
         (do (println "Kindly enter a valid option...")
             (printMenu)
             (def userChoice (read-line))
+            (newline)
             (handleUserInput customerMaps productMaps salesMaps userChoice)
         )
       )
@@ -136,6 +160,7 @@
     (println "Successfully loaded data files!")
     (printMenu)
     (def userInp (read-line))
+    (newline)
     (handleUserInput customerMaps productMaps salesMapsWithCustomerAndProduct userInp)
   )
 
