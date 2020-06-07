@@ -90,7 +90,7 @@
   )
 
   (defn printSalesMap [salesMaps]
-    (dorun (map printSalesRecord (sort-by :salesID salesMaps)))
+    (mapv printSalesRecord (sort-by :salesID salesMaps))
   )
 
   (defn printTotalSaleValueForCustomer [salesMaps]
